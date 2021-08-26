@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>All Users</title>
+</head>
+<div th:align="center">
+<body>
+
+<table th:border="1px">
+    <tr>
+        <th>Id</th>
+        <th>Username</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Age</th>
+        <th>Operations</th>
+    </tr>
+    <tr th:each="user:${users}">
+        <td th:text="${user.id}"></td>
+        <td th:text="${user.username}"></td>
+        <td th:text="${user.name}"></td>
+        <td th:text="${user.surname}"></td>
+        <td th:text="${user.age}"></td>
+        <td>
+            <form th:method="GET" th:action="@{/admin/{id}(id=${user.getId()})}">
+                <input type="submit" value="Open profile"/>
+            </form>
+            <form th:method="DELETE" th:action="@{/admin/{id}(id=${user.getId()})}">
+                <input type="submit" value="Delete"/>
+            </form>
+        </td>
+    </tr>
+</table>
+
+<br/>
+
+<a th:href="@{/logout}">Logout</a>
+
+<!--<div th:each="user : ${users}">-->
+<!--    <a th:href="@{/admin/{id}(id=${user.getId()})}" th:text="${user.getName() + user.getSurname()}">user</a>-->
+<!--</div>-->
+<br/>
+<hr/>
+
+<a th:href="@{/admin/new}">New User</a>
+
+</body>
+</div>
+</html>
