@@ -5,6 +5,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import web.model.Role;
 import web.model.User;
+import web.service.RoleService;
 import web.service.UserService;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,9 +15,11 @@ import java.util.Set;
 public class AdminController {
 
     private final UserService userService;
+    private final RoleService roleService;
 
-    public AdminController(UserService userService) {
+    public AdminController(UserService userService, RoleService roleService) {
         this.userService = userService;
+        this.roleService = roleService;
     }
 
     @GetMapping()
@@ -38,9 +41,11 @@ public class AdminController {
 
     @PostMapping()
     public String addUser(@ModelAttribute("user") User user, @ModelAttribute("my_role") String my_role) {
-        Role role = new Role((my_role.equals("ADMIN") ? 1L : 2L), "ROLE" + my_role);
         Set<Role> roles = new HashSet<>();
-        roles.add(role);
+        if (my_role.equals("ADMIN")) {
+            roles.add(roleService.getRoleById(2L));
+        }
+        roles.add(roleService.getRoleById(1L));
         user.setRoles(roles);
         userService.addUser(user);
         return "redirect:/admin";
