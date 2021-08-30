@@ -50,8 +50,10 @@ public class AdminController {
             Set<Role> roles = new HashSet<>();
             if (my_role.equals("ADMIN")) {
                 roles.add(roleService.getRoleByName("ROLE_ADMIN"));
+                roles.add(roleService.getRoleByName("ROLE_USER"));
+            } else {
+                roles.add(roleService.getRoleByName("ROLE_" + my_role));
             }
-            roles.add(roleService.getRoleByName("ROLE_" + my_role));
             user.setRoles(roles);
             userService.addUser(user);
         } catch (Exception e) {
