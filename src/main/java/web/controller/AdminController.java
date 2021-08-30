@@ -7,6 +7,9 @@ import web.model.Role;
 import web.model.User;
 import web.service.RoleService;
 import web.service.UserService;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,10 +17,12 @@ import java.util.Set;
 @RequestMapping("/admin")
 public class AdminController {
 
+    private final HttpServletResponse response;
     private final UserService userService;
     private final RoleService roleService;
 
-    public AdminController(UserService userService, RoleService roleService) {
+    public AdminController(HttpServletResponse response, UserService userService, RoleService roleService) {
+        this.response = response;
         this.userService = userService;
         this.roleService = roleService;
     }
@@ -40,14 +45,19 @@ public class AdminController {
     }
 
     @PostMapping()
-    public String addUser(@ModelAttribute("user") User user, @ModelAttribute("my_role") String my_role) {
-        Set<Role> roles = new HashSet<>();
-        if (my_role.equals("ADMIN")) {
-            roles.add(roleService.getRoleById(2L));
+    public String addUser(@ModelAttribute("user") User user, @ModelAttribute("my_role") String my_role) throws IOException {
+        try {
+            Set<Role> roles = new HashSet<>();
+            if (my_role.equals("ADMIN")) {
+                roles.add(roleService.getRoleByName("ROLE_ADMIN"));
+            }
+            roles.add(roleService.getRoleByName("ROLE_" + my_role));
+            user.setRoles(roles);
+            userService.addUser(user);
+        } catch (Exception e) {
+            response.sendError(400, "Role does not exist");
+            return "users";
         }
-        roles.add(roleService.getRoleById(1L));
-        user.setRoles(roles);
-        userService.addUser(user);
         return "redirect:/admin";
     }
 
