@@ -1,5 +1,6 @@
 package web.controller;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -48,15 +49,11 @@ public class AdminController {
     public String addUser(@ModelAttribute("user") User user, @ModelAttribute("my_role") String my_role) throws IOException {
         try {
             Set<Role> roles = new HashSet<>();
-            if (my_role.equals("ADMIN")) {
-                roles.add(roleService.getRoleByName("ROLE_ADMIN"));
-                roles.add(roleService.getRoleByName("ROLE_USER"));
-            } else {
-                roles.add(roleService.getRoleByName("ROLE_" + my_role));
-            }
+            roles.add(roleService.getRoleByName("ROLE_" + my_role));
+            roles.add(roleService.getRoleByName("ROLE_USER"));
             user.setRoles(roles);
             userService.addUser(user);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             response.sendError(400, "Role does not exist");
             return "users";
         }
